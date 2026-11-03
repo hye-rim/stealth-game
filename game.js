@@ -59,7 +59,8 @@ function showOverlay(html) {
   o.querySelectorAll('button[data-quit]').forEach((b) => { b.onclick = () => { hideOverlay(); showTitle(); }; });
 }
 function hideOverlay() { $('overlay').classList.add('hidden'); }
-const lvButtons = () => `<div class="lv"><button data-level="easy">쉬움<small>발각돼도 계속 · 느슨한 시야</small></button><button data-level="normal">보통<small>목숨 3 · 기록</small></button></div>`;
+let daily = false;                                                   // 이번 판이 오늘의 판인가 (로비의 daily.js)
+const lvButtons = () => `<div class="lv"><button data-level="easy">쉬움<small>발각돼도 계속 · 느슨한 시야</small></button><button data-level="normal">보통<small>목숨 3 · 기록</small></button>${window.arcadeDaily ? arcadeDaily.buttonHtml() : ''}</div>`;
 function showTitle() {
   state = 'title';
   showOverlay(`<h1>스텔스</h1><p>경비의 <b>시야(노란 부채꼴)</b>를 피해<br><b>열쇠 🔑</b>를 모두 줍고 <b>출구 🚪</b>로 가세요!</p>
@@ -70,8 +71,9 @@ function start(lv) {
   tut = /[?&]tutorial=1/.test(location.search);
   if (tut) lv = 'easy';
   level = lv === 'normal' ? 'normal' : 'easy';
+  daily = !tut && lv === 'normal' && !!(window.arcadeDaily && arcadeDaily.take());
   try {
-    G = tut ? L.newGame(Math.random, { level, stage: 1, seed: 20, tutorial: true }) : L.newGame(Math.random, { level, stage: 1 });
+    G = tut ? L.newGame(Math.random, { level, stage: 1, seed: 20, tutorial: true }) : L.newGame(Math.random, daily ? { level, stage: 1, seed: arcadeDaily.seed() } : { level, stage: 1 });
   } catch (e) { G = L.newGame(Math.random, { level, stage: 1, seed: 1 }); }
   resetFx(); newBest = false;
   state = 'play'; hideOverlay();
@@ -90,11 +92,12 @@ function onCaught() {
 }
 function gameOver() {
   state = 'over'; sfx.over();
-  const reached = G.stage - 1;               // 끝난 단계 전까지 클리어한 수 (기록은 클리어할 때마다 이미 저장해 둠)
+  const reached = G.stage - 1;
+  if (!tut && window.arcadeRun) arcadeRun({ level, bad: reached <= 1 });         // 연패 구제(로비): 1단계도 못 넘기면 나쁜 판               // 끝난 단계 전까지 클리어한 수 (기록은 클리어할 때마다 이미 저장해 둠)
   if (newBest) setTimeout(sfx.best, 500);
   setTimeout(() => {
     if (state !== 'over') return;
-    showOverlay(`<h2>발각됐어요!</h2><div class="big">${reached}단계 클리어</div><p>⭐ ${G.stars}개 · 발각 ${G.caughtTotal}번${newBest ? ' · 🎉 새 최고 기록!' : level === 'normal' ? ` · 최고 ${best}단계` : ''}</p>${lvButtons()}`);
+    showOverlay(`<h2>발각됐어요!</h2><div class="big">${reached}단계 클리어</div><p>⭐ ${G.stars}개 · 발각 ${G.caughtTotal}번${newBest ? ' · 🎉 새 최고 기록!' : level === 'normal' ? ` · 최고 ${best}단계` : ''}</p>${daily ? arcadeDaily.result('스텔스', reached, '단계') : ''}${lvButtons()}`);
   }, 900);
 }
 function onCleared(ev) {
