@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>스텔스</title>
+<style>
+  *, *::before, *::after { -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html, body { width:100%; height:100%; overflow:hidden; background:#0a1020; color:#fff; touch-action:none;
+    font-family:-apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; }
+  #stage { width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
+  #wrap { position:relative; background:#000; }
+  #game { display:block; touch-action:none; border-radius:8px; }
+  #overlay { position:absolute; inset:0; z-index:6; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; text-align:center; padding:14px; background:rgba(8,10,22,.82); border-radius:8px; }
+  #overlay.hidden { display:none; }
+  #overlay h1 { font-size:42px; font-weight:900; letter-spacing:.04em; color:#7be0ff; text-shadow:0 3px 0 #0a3a5a; }
+  #overlay h2 { font-size:26px; font-weight:900; }
+  #overlay p { font-size:13px; color:#e6e6e6; line-height:1.6; }
+  #overlay .big { font-size:20px; font-weight:800; color:#7be0ff; }
+  #overlay .help { font-size:12px; color:#bdbdbd; line-height:1.7; }
+  #overlay .note { font-size:11px; color:#aab; }
+  #overlay button { margin-top:6px; background:linear-gradient(180deg,#d6f4ff,#4cc3ff); color:#06243a; font-weight:900; font-size:17px; border:none; border-radius:999px; padding:12px 34px; box-shadow:0 4px 0 #1a6a9a; cursor:pointer; }
+  #overlay button:active { transform:translateY(3px); box-shadow:0 1px 0 #1a6a9a; }
+  #overlay .lv { display:flex; gap:10px; margin-top:6px; }
+  #overlay .lv button { margin-top:0; padding:10px 18px; font-size:16px; }
+  #overlay .lv small { display:block; font-size:10px; font-weight:600; opacity:.75; margin-top:2px; }
+  #overlay .rank { width:210px; display:flex; flex-direction:column; gap:3px; }
+  #overlay .row { display:flex; gap:10px; font-size:14px; padding:4px 10px; border-radius:8px; background:rgba(255,255,255,.08); }
+  #overlay .row span:nth-child(2) { flex:1; text-align:left; }
+  #overlay .row.me { background:rgba(76,195,255,.4); font-weight:800; }
+  #top { position:absolute; right:6px; top:6px; display:flex; gap:6px; z-index:7; }
+  #top button { position:relative; background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.3); color:#fff; width:32px; height:32px; border-radius:8px; font-size:14px; cursor:pointer; }
+  #top button::after { content:''; position:absolute; inset:-6px -3px; }
+  .pc { display:inline; } .touch { display:none; }
+  @media (pointer:coarse) { .pc { display:none; } .touch { display:inline; } }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="wrap">
+    <canvas id="game" width="360" height="640"></canvas>
+    <div id="top"><button id="muteBtn" title="소리 (M)">🔊</button><button id="pauseBtn" title="일시정지 (P)">⏸</button></div>
+    <div id="overlay"></div>
+  </div>
+</div>
+<script src="logic.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
